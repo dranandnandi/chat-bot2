@@ -1,0 +1,59 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .chatbox { width: 300px; margin: 0 auto; }
+        .messages { border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll; }
+        .input { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="chatbox">
+        <div class="messages" id="messages"></div>
+        <div class="input">
+            <input type="text" id="messageInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch JSON data
+        async function fetchConfig() {
+            const response = await fetch('config.json');
+            const config = await response.json();
+            return config;
+        }
+
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const messages = document.getElementById('messages');
+            const userMessage = messageInput.value;
+
+            // Add user message to chat
+            messages.innerHTML += `<div><strong>You:</strong> ${userMessage}</div>`;
+
+            // Fetch JSON config
+            const config = await fetchConfig();
+
+            // Mock response from chatbot based on JSON config
+            const botResponse = config.responses[userMessage.toLowerCase()] || "I don't understand that.";
+            messages.innerHTML += `<div><strong>Bot:</strong> ${botResponse}</div>`;
+
+            messageInput.value = '';
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Display welcome message from JSON config on page load
+        window.onload = async () => {
+            const messages = document.getElementById('messages');
+            const config = await fetchConfig();
+            messages.innerHTML += `<div><strong>Bot:</strong> ${config.welcome_message}</div>`;
+        };
+    </script>
+</body>
+</html>
